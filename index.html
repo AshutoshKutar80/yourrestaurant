@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Angithi – Fire-cooked kitchen</title>
+    <script>
+        try {
+            if (sessionStorage.getItem('ang_seen')) document.documentElement.classList.add('seen')
+        } catch (e) {}
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,800;1,400&family=DM+Sans:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        wine: '#2B0F12',
+                        wine2: '#3D161B',
+                        saffron: '#E8A33D',
+                        ivory: '#F6EBD9',
+                        ember: '#C8452B'
+                    },
+                    fontFamily: {
+                        display: ['Fraunces', 'serif'],
+                        body: ['"DM Sans"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            scroll-behavior: smooth
+        }
+
+        section[id] {
+            scroll-margin-top: 70px
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #2B0F12;
+            color: #F6EBD9
+        }
+
+        #gate {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: flex
+        }
+
+        #gate .door {
+            width: 50%;
+            background: linear-gradient(#3D161B, #2B0F12);
+            transition: transform 1.4s cubic-bezier(.77, 0, .18, 1);
+            position: relative
+        }
+
+        #gate .l {
+            border-right: 3px solid #E8A33D
+        }
+
+        #gate .r {
+            border-left: 3px solid #E8A33D
+        }
+
+        #gate .door::after {
+            content: '';
+            position: absolute;
+            top: 66%;
+            width: 16px;
+            height: 110px;
+            background: linear-gradient(90deg, #fff, #cfd8e3 55%, #7d8999);
+            border-radius: 10px;
+            box-shadow: 0 6px 18px #000a, inset 0 0 0 2px #0003;
+            transform: translateY(-50%)
+        }
+
+        #gate .door::before {
+            content: '';
+            position: absolute;
+            inset: 7% 14%;
+            border: 1px solid #E8A33D55;
+            border-radius: 16px
+        }
+
+        .seen #gate {
+            display: none
+        }
+
+        #gate .l::after {
+            right: 22px
+        }
+
+        #gate .r::after {
+            left: 22px
+        }
+
+        #gate.open .l {
+            transform: translateX(-100%)
+        }
+
+        #gate.open .r {
+            transform: translateX(100%)
+        }
+
+        #gate .logo {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 18vh;
+            text-align: center;
+            text-shadow: 0 4px 24px #000;
+            z-index: 2;
+            transition: opacity .5s
+        }
+
+        #gate.open .logo {
+            opacity: 0
+        }
+
+        #gate.done {
+            display: none
+        }
+
+        .bar {
+            width: 180px;
+            height: 2px;
+            background: #ffffff22;
+            margin-top: 18px;
+            overflow: hidden
+        }
+
+        .bar i {
+            display: block;
+            height: 100%;
+            width: 0;
+            background: #E8A33D;
+            transition: width 1.6s ease
+        }
+
+        #nav {
+            transition: .4s
+        }
+
+        #nav.solid {
+            background: #2B0F12ee;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 30px #0006;
+            padding-top: .8rem;
+            padding-bottom: .8rem
+        }
+
+        .nl {
+            position: relative;
+            padding: 4px 0
+        }
+
+        .nl::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 2px;
+            width: 0;
+            background: #E8A33D;
+            transition: width .3s
+        }
+
+        .nl:hover::after,
+        .nl.on::after {
+            width: 100%
+        }
+
+        .nl.on {
+            color: #E8A33D
+        }
+
+        .btn {
+            display: inline-block;
+            background: #E8A33D;
+            color: #2B0F12;
+            font-weight: 700;
+            padding: .85rem 1.8rem;
+            border-radius: 999px;
+            transition: .25s;
+            cursor: pointer
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px #E8A33D55;
+            background: #f2b858
+        }
+
+        .btn-o {
+            background: transparent;
+            border: 1.5px solid #E8A33D;
+            color: #E8A33D
+        }
+
+        .btn-o:hover {
+            background: #E8A33D;
+            color: #2B0F12
+        }
+
+        .rv {
+            opacity: 0;
+            transform: translateY(34px);
+            transition: opacity .8s ease, transform .8s ease
+        }
+
+        .rv.in {
+            opacity: 1;
+            transform: none
+        }
+
+        .zoom {
+            overflow: hidden
+        }
+
+        .zoom img {
+            transition: transform .8s ease
+        }
+
+        .zoom:hover img {
+            transform: scale(1.08)
+        }
+
+        .kb {
+            animation: kb 22s ease-in-out infinite alternate
+        }
+
+        @keyframes kb {
+            to {
+                transform: scale(1.15)
+            }
+        }
+
+        .float {
+            animation: fl 4s ease-in-out infinite
+        }
+
+        @keyframes fl {
+            50% {
+                transform: translateY(-12px)
+            }
+        }
+
+        .marq {
+            display: flex;
+            width: max-content;
+            animation: mq 28s linear infinite
+        }
+
+        @keyframes mq {
+            to {
+                transform: translateX(-50%)
+            }
+        }
+
+        .inp {
+            width: 100%;
+            background: #ffffff0d;
+            border: 1px solid #ffffff2a;
+            border-radius: 12px;
+            padding: .85rem 1rem;
+            color: #F6EBD9;
+            outline: none;
+            transition: .25s
+        }
+
+        .inp:focus {
+            border-color: #E8A33D;
+            background: #ffffff14
+        }
+
+        .inp option {
+            background: #2B0F12
+        }
+
+        .tab {
+            padding: .5rem 1.3rem;
+            border-radius: 999px;
+            border: 1px solid #ffffff2a;
+            transition: .25s
+        }
+
+        .tab.on,
+        .tab:hover {
+            background: #E8A33D;
+            color: #2B0F12;
+            border-color: #E8A33D
+        }
+
+        .th {
+            width: 44px;
+            height: 44px;
+            object-fit: cover;
+            border-radius: 10px;
+            opacity: .55;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: .2s
+        }
+
+        .th.on,
+        .th:hover {
+            opacity: 1;
+            border-color: #E8A33D
+        }
+
+        .por {
+            flex: 1;
+            padding: .4rem;
+            border-radius: 999px;
+            font-size: .8rem;
+            border: 1px solid #ffffff2a;
+            transition: .2s
+        }
+
+        .por.on {
+            background: #E8A33D;
+            color: #2B0F12;
+            font-weight: 700;
+            border-color: #E8A33D
+        }
+
+        .qb {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #ffffff14;
+            font-weight: 700;
+            transition: .2s
+        }
+
+        .qb:hover {
+            background: #E8A33D;
+            color: #2B0F12
+        }
+
+        #drawer {
+            transition: transform .45s cubic-bezier(.77, 0, .18, 1)
+        }
+
+        .faq .a {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .4s
+        }
+
+        .faq.open .a {
+            max-height: 200px
+        }
+
+        .faq.open .ic {
+            transform: rotate(45deg)
+        }
+
+        .ic {
+            transition: .3s
+        }
+
+        .swal2-popup {
+            border-radius: 24px !important;
+            font-family: 'DM Sans', sans-serif !important
+        }
+
+        .cur,
+        .cur * {
+            cursor: none !important
+        }
+
+        #cd,
+        #cr {
+            position: fixed;
+            left: 0;
+            top: 0;
+            pointer-events: none;
+            z-index: 99999;
+            display: none;
+            transition: opacity .3s
+        }
+
+        .cur #cd,
+        .cur #cr {
+            display: block
+        }
+
+        #cd {
+            width: 8px;
+            height: 8px;
+            margin: -4px 0 0 -4px;
+            background: #E8A33D;
+            border-radius: 50%
+        }
+
+        #cr {
+            width: 40px;
+            height: 40px;
+            margin: -20px 0 0 -20px;
+            border: 1.5px solid #E8A33D;
+            border-radius: 50%;
+            transition: width .25s, height .25s, margin .25s, background .25s
+        }
+
+        #cr.hv {
+            width: 66px;
+            height: 66px;
+            margin: -33px 0 0 -33px;
+            background: #E8A33D22
+        }
+
+        #cr.dn {
+            width: 26px;
+            height: 26px;
+            margin: -13px 0 0 -13px
+        }
+
+        #cr.vw {
+            width: 80px;
+            height: 80px;
+            margin: -40px 0 0 -40px;
+            background: #E8A33D
+        }
+
+        #cr.vw::after {
+            content: 'View';
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            color: #2B0F12;
+            font-weight: 700;
+            font-size: .8rem
+        }
+
+        .sp {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: radial-gradient(#fff3c4, #E8A33D 50%, #C8452B);
+            pointer-events: none;
+            z-index: 99998;
+            animation: spk .8s ease-out forwards
+        }
+
+        @keyframes spk {
+            to {
+                transform: translate(var(--dx), -46px) scale(0);
+                opacity: 0
+            }
+        }
+
+        .card.in {
+            transition: transform .3s, box-shadow .3s, opacity .8s
+        }
+
+        .card.in:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 22px 40px #000a, 0 0 0 1px #E8A33D66
+        }
+
+        @media (prefers-reduced-motion:reduce) {
+            * {
+                animation: none !important;
+                transition: none !important
+            }
+        }
+    </style>
+</head>
+
+<body class="overflow-x-hidden">
+
+    <div id="gate">
+        <div class="door l"></div>
+        <div class="door r"></div>
+        <div class="logo">
+            <div class="font-display text-5xl md:text-7xl font-extrabold text-saffron">Angithi</div>
+            <p class="mt-2 tracking-widest text-ivory/70 text-sm">Fire-cooked kitchen</p>
+            <div class="bar"><i></i></div>
+            <p class="mt-3 text-xs text-ivory/60">Lighting the fire…</p>
+        </div>
+    </div>
+
+    <header id="nav" class="fixed top-0 inset-x-0 z-50 py-5">
+        <div class="max-w-7xl mx-auto px-5 flex items-center justify-between">
+            <a href="#home" class="font-display text-3xl font-extrabold text-saffron">Angithi</a>
+            <nav class="hidden xl:flex gap-6 text-sm font-medium" id="links"></nav>
+            <div class="flex items-center gap-4">
+                <a href="#reserve" class="btn !py-2 !px-5 text-sm hidden sm:inline-block">Book a table</a>
+                <button id="cartBtn" class="relative text-2xl" aria-label="Open basket">🛒<span id="cc"
+                        class="absolute -top-2 -right-3 bg-ember text-xs w-5 h-5 rounded-full grid place-items-center transition">0</span></button>
+                <button id="burger" class="xl:hidden text-2xl" aria-label="Menu">☰</button>
+            </div>
+        </div>
+        <div id="mob" class="hidden bg-wine2 mt-4 mx-5 rounded-2xl p-5 flex-col gap-4 text-lg xl:hidden"></div>
+    </header>
+
+    <!-- HOME -->
+    <section id="home" class="relative min-h-screen flex items-center overflow-hidden pt-28 pb-16">
+        <img class="kb absolute inset-0 w-full h-full object-cover opacity-40"
+            src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1800&q=80" alt="">
+        <div class="absolute inset-0 bg-gradient-to-r from-wine via-wine/85 to-wine/30"></div>
+        <div class="relative max-w-7xl mx-auto px-5 grid lg:grid-cols-2 gap-12 items-center w-full">
+            <div>
+                <p class="text-saffron tracking-widest mb-4 rv">Wood-fire cooking since 2012</p>
+                <h1 class="font-display font-extrabold text-5xl md:text-7xl leading-[1.03] rv">Slow flame,<br><em
+                        class="font-normal text-saffron">big flavour.</em></h1>
+                <p class="mt-6 max-w-lg text-lg text-ivory/80 rv">Tandoor, charcoal and clay-pot dishes cooked over a
+                    live angithi. Order half or full portions, or book a table for tonight.</p>
+                <div class="mt-9 flex flex-wrap gap-4 rv"><a href="#menu" class="btn">Order now</a><a
+                        href="#reserve" class="btn btn-o">Reserve a table</a></div>
+                <div class="mt-10 flex gap-8 rv">
+                    <div><b class="font-display text-3xl text-saffron">4.8★</b>
+                        <p class="text-sm text-ivory/60">2,300+ reviews</p>
+                    </div>
+                    <div><b class="font-display text-3xl text-saffron">30 min</b>
+                        <p class="text-sm text-ivory/60">Avg. delivery</p>
+                    </div>
+                    <div><b class="font-display text-3xl text-saffron">Free</b>
+                        <p class="text-sm text-ivory/60">Above ₹799</p>
+                    </div>
+                </div>
+            </div>
+            <div class="relative h-[460px] hidden lg:block">
+                <img class="float absolute top-0 right-0 w-72 h-80 object-cover rounded-[2rem] rounded-tr-[5rem] shadow-2xl"
+                    src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=700&q=80" alt="Kebabs">
+                <img class="float absolute bottom-0 left-4 w-64 h-72 object-cover rounded-[2rem] rounded-bl-[5rem] shadow-2xl border-4 border-wine"
+                    style="animation-delay:-2s"
+                    src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=700&q=80" alt="Curry">
+                <div
+                    class="absolute top-1/2 left-1/3 bg-saffron text-wine rounded-full w-28 h-28 grid place-items-center text-center font-display font-bold leading-tight rotate-12 shadow-xl">
+                    Chef’s<br>pick</div>
+            </div>
+        </div>
+    </section>
+    <div class="bg-saffron text-wine py-4 overflow-hidden font-display text-2xl font-semibold">
+        <div class="marq"><span class="px-6">Smoked paneer ✦ Butter chicken ✦ Dal makhani ✦ Garlic naan ✦ Seekh
+                kebab ✦ Gulab jamun ✦ </span><span class="px-6">Smoked paneer ✦ Butter chicken ✦ Dal makhani ✦ Garlic
+                naan ✦ Seekh kebab ✦ Gulab jamun ✦ </span></div>
+    </div>
+
+    <!-- OFFERS -->
+    <section class="max-w-7xl mx-auto px-5 py-20 grid md:grid-cols-3 gap-6" id="feat"></section>
+
+    <!-- SIGNATURES -->
+    <section class="max-w-7xl mx-auto px-5 pb-24">
+        <div class="text-center rv mb-12">
+            <h2 class="font-display text-4xl md:text-6xl font-extrabold">Signature plates</h2>
+            <p class="mt-3 text-ivory/70">The dishes people travel across the city for.</p>
+        </div>
+        <div id="bento" class="grid md:grid-cols-4 md:grid-rows-2 gap-4 md:h-[640px]"></div>
+    </section>
+    <!-- MENU -->
+    <section id="menu" class="bg-wine2/60 py-24">
+        <div class="max-w-7xl mx-auto px-5">
+            <div class="text-center rv">
+                <h2 class="font-display text-4xl md:text-6xl font-extrabold">Our menu</h2>
+                <p class="mt-3 text-ivory/70">Pick half or full, set the quantity, and add to your basket.</p>
+            </div>
+            <div id="tabs" class="flex flex-wrap justify-center gap-3 my-10"><button class="tab on"
+                    data-c="all">All</button><button class="tab" data-c="starters">Starters</button><button
+                    class="tab" data-c="mains">Mains</button><button class="tab" data-c="breads">Breads &
+                    more</button><button class="tab" data-c="sweets">Desserts</button><button class="tab"
+                    data-c="drinks">Drinks</button></div>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center mb-10"><input id="ms"
+                    class="inp sm:max-w-sm" placeholder="Search dishes…"><button id="veg" class="tab">🟢
+                    Veg only</button></div>
+            <div id="mgrid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="max-w-7xl mx-auto px-5 py-24 grid lg:grid-cols-2 gap-14 items-center">
+        <div class="rv">
+            <h2 class="font-display text-4xl md:text-6xl font-extrabold leading-tight">Born around a fire pit</h2>
+            <p class="mt-6 text-lg text-ivory/80 leading-relaxed">Angithi started in 2012 as a small family kitchen
+                with one clay tandoor. Chef Rohan Mehra learned his grandmother’s recipes and kept her one rule: no
+                shortcuts, only slow heat.</p>
+            <p class="mt-4 text-lg text-ivory/80 leading-relaxed">Today we grind our own spices, marinate for 24 hours
+                and cook everything over charcoal or wood. Our menu changes with the seasons, but the fire never goes
+                out.</p>
+            <div class="grid grid-cols-2 gap-4 mt-8" id="vals"></div>
+        </div>
+        <div class="relative rv">
+            <div class="zoom rounded-[2rem] rounded-tr-[6rem]"><img class="w-full h-[520px] object-cover"
+                    src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=1000&q=80" alt="Chef at work">
+            </div>
+            <div class="float absolute -bottom-6 -left-2 md:-left-8 bg-saffron text-wine rounded-2xl p-5 shadow-xl"><b
+                    class="font-display text-4xl">24 hrs</b>
+                <p class="text-sm font-medium">marination, every time</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <div class="bg-saffron text-wine py-16">
+        <div class="max-w-7xl mx-auto px-5 grid grid-cols-2 md:grid-cols-4 gap-8 text-center" id="stats"></div>
+    </div>
+
+    <!-- PROCESS -->
+    <section id="process" class="max-w-7xl mx-auto px-5 py-24">
+        <div class="text-center rv">
+            <h2 class="font-display text-4xl md:text-6xl font-extrabold">From fire to plate</h2>
+            <p class="mt-3 text-ivory/70">Four steps that happen for every dish.</p>
+        </div>
+        <div class="grid md:grid-cols-4 gap-6 mt-14" id="steps"></div>
+    </section>
+
+    <!-- TEAM -->
+    <section id="team" class="max-w-7xl mx-auto px-5 pb-24">
+        <div class="text-center rv">
+            <h2 class="font-display text-4xl md:text-6xl font-extrabold">Meet the fire keepers</h2>
+            <p class="mt-3 text-ivory/70">The people behind every smoky bite.</p>
+        </div>
+        <div id="teamg" class="grid md:grid-cols-3 gap-8 mt-14"></div>
+    </section>
+    <!-- GALLERY -->
+    <section id="gallery" class="bg-wine2/60 py-24">
+        <div class="max-w-7xl mx-auto px-5">
+            <div class="text-center rv">
+                <h2 class="font-display text-4xl md:text-6xl font-extrabold">Gallery</h2>
+                <p class="mt-3 text-ivory/70">Click a photo to enlarge it.</p>
+            </div>
+            <div id="gg" class="columns-2 md:columns-4 gap-4 mt-12"></div>
+        </div>
+    </section>
+
+    <!-- BANNER -->
+    <section class="py-32 text-center"
+        style="background:linear-gradient(#2B0F12cc,#2B0F12cc),url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1800&q=80') center/cover fixed">
+        <div class="max-w-3xl mx-auto px-5 rv">
+            <h2 class="font-display text-4xl md:text-6xl font-extrabold">Dinner for two from ₹1,499</h2>
+            <p class="mt-4 text-lg text-ivory/80">A five-course chef’s tasting over live fire, every evening after 7
+                PM.</p><a href="#reserve" class="btn mt-8">Book the tasting</a>
+        </div>
+    </section>
+    <!-- REVIEWS -->
+    <section id="reviews" class="max-w-4xl mx-auto px-5 py-24 text-center">
+        <h2 class="font-display text-4xl md:text-6xl font-extrabold rv">What guests say</h2>
+        <div class="relative mt-14 min-h-[280px]" id="rvw"></div>
+        <div id="dots" class="flex justify-center gap-3 mt-4"></div>
+        <div class="grid md:grid-cols-3 gap-5 mt-16 text-left" id="mini"></div>
+    </section>
+
+    <!-- RESERVE -->
+    <section id="reserve" class="bg-wine2/60 py-24">
+        <div class="max-w-7xl mx-auto px-5 grid lg:grid-cols-2 gap-12 items-start">
+            <div class="rv">
+                <h2 class="font-display text-4xl md:text-6xl font-extrabold">Reserve a table</h2>
+                <p class="mt-4 text-ivory/80 text-lg">Tell us when you’re coming. We’ll confirm within 15 minutes.</p>
+                <div class="zoom rounded-3xl mt-8"><img class="w-full h-72 object-cover"
+                        src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1000&q=80" alt="Cosy table">
+                </div>
+            </div>
+            <div id="rf" class="bg-wine rounded-3xl p-7 md:p-9 grid grid-cols-2 gap-4 rv">
+                <div class="col-span-2"><label class="text-sm">Full name</label><input id="rn"
+                        class="inp mt-1" placeholder="Your name"></div>
+                <div class="col-span-2 md:col-span-1"><label class="text-sm">Phone</label><input id="rp"
+                        class="inp mt-1" placeholder="10-digit number" inputmode="numeric"></div>
+                <div class="col-span-2 md:col-span-1"><label class="text-sm">Guests</label><select id="rg"
+                        class="inp mt-1">
+                        <option>1</option>
+                        <option selected>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7+</option>
+                    </select></div>
+                <div class="col-span-2 md:col-span-1"><label class="text-sm">Date</label><input id="rd"
+                        type="date" class="inp mt-1"></div>
+                <div class="col-span-2 md:col-span-1"><label class="text-sm">Time</label><select id="rt"
+                        class="inp mt-1">
+                        <option>12:30 PM</option>
+                        <option>2:00 PM</option>
+                        <option>7:00 PM</option>
+                        <option selected>8:30 PM</option>
+                        <option>10:00 PM</option>
+                    </select></div>
+                <div class="col-span-2"><label class="text-sm">Special request</label>
+                    <textarea id="rm" rows="3" class="inp mt-1" placeholder="Birthday, allergies, window seat…"></textarea>
+                </div>
+                <button id="rsub" class="btn col-span-2">Confirm reservation</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="max-w-3xl mx-auto px-5 py-24">
+        <h2 class="font-display text-4xl md:text-6xl font-extrabold text-center rv">Good to know</h2>
+        <div class="mt-12 space-y-3" id="faqs"></div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="bg-wine2/60 py-24">
+        <div class="max-w-7xl mx-auto px-5">
+            <h2 class="font-display text-4xl md:text-6xl font-extrabold rv">Find us</h2>
+            <div class="grid lg:grid-cols-2 gap-10 mt-12">
+                <div class="space-y-4 rv" id="info"></div>
+                <div class="rv">
+                    <div class="rounded-3xl overflow-hidden h-72 mb-6"><iframe class="w-full h-full" loading="lazy"
+                            title="Map"
+                            src="https://www.openstreetmap.org/export/embed.html?bbox=77.19%2C28.62%2C77.24%2C28.65&layer=mapnik"></iframe>
+                    </div>
+                    <div class="bg-wine rounded-3xl p-6 grid gap-3"><input id="cn" class="inp"
+                            placeholder="Your name"><input id="ce" class="inp" placeholder="Email">
+                        <textarea id="cm" rows="3" class="inp" placeholder="Your message"></textarea><button id="csub" class="btn">Send message</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-wine">
+        <div class="max-w-7xl mx-auto px-5 py-14 grid md:grid-cols-3 gap-8">
+            <div>
+                <div class="font-display text-3xl font-extrabold text-saffron">Angithi</div>
+                <p class="mt-3 text-ivory/60">Fire-cooked food, made slowly.</p>
+            </div>
+            <div><b>Get 10% off your first order</b>
+                <div class="flex gap-2 mt-3"><input id="ne" class="inp" placeholder="Your email"><button
+                        id="nsub" class="btn !px-5">Join</button></div>
+            </div>
+            <p class="text-ivory/60">Open daily, 12 PM – 11 PM<br>Demo website. Not a real restaurant.<br><button
+                    id="replay" class="underline text-saffron mt-2">Replay intro</button></p>
+        </div>
+    </footer>
+
+    <div id="ov" class="fixed inset-0 bg-black/60 z-[60] hidden"></div>
+    <aside id="drawer"
+        class="fixed top-0 right-0 h-full w-full max-w-md bg-wine2 z-[70] translate-x-full flex flex-col shadow-2xl">
+        <div class="flex items-center justify-between p-6 border-b border-white/10">
+            <h3 class="font-display text-2xl font-bold">Your basket</h3><button id="cx" class="text-2xl"
+                aria-label="Close">✕</button>
+        </div>
+        <div id="items" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
+        <div class="p-6 border-t border-white/10 space-y-2">
+            <div class="flex justify-between text-ivory/70"><span>Subtotal</span><span id="sub">₹0</span></div>
+            <div class="flex justify-between text-ivory/70"><span>GST (5%)</span><span id="gst">₹0</span></div>
+            <div class="flex justify-between text-xl font-bold"><span>Total</span><span id="tot"
+                    class="text-saffron">₹0</span></div>
+            <div class="flex gap-3 pt-3"><button id="clr" class="btn btn-o !px-5">Clear</button><button
+                    id="chk" class="btn flex-1">Checkout</button></div>
+        </div>
+    </aside>
+    <button id="top"
+        class="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-saffron text-wine text-xl font-bold opacity-0 pointer-events-none transition"
+        aria-label="Back to top">↑</button>
+
+    <div id="cd"></div>
+    <div id="cr"></div>
+    <script>
+        $(function() {
+            const U = (id, w = 800) => `https://images.unsplash.com/photo-${id}?w=${w}&q=80`;
+            const T = {
+                background: '#F6EBD9',
+                color: '#2B0F12',
+                confirmButtonColor: '#E8A33D'
+            };
+            const nav = [
+                ['home', 'Home'],
+                ['menu', 'Menu'],
+                ['about', 'Our story'],
+                ['process', 'Process'],
+                ['team', 'Chefs'],
+                ['gallery', 'Gallery'],
+                ['reviews', 'Reviews'],
+                ['reserve', 'Reserve'],
+                ['faq', 'FAQ'],
+                ['contact', 'Contact']
+            ];
+            $('#links').html(nav.map(n => `<a class="nl" href="#${n[0]}">${n[1]}</a>`).join(''));
+            $('#mob').html(nav.map(n => `<a class="nl" href="#${n[0]}">${n[1]}</a>`).join(''));
+
+            const P = {
+                a: '1555939594-58d7cb561ad1',
+                b: '1565299624946-b28f40a0ae38',
+                c: '1504674900247-0877df9cc836',
+                d: '1546069901-ba9599a7e63c',
+                e: '1544025162-d76694265947',
+                f: '1473093295043-cdd812d0e601',
+                g: '1565958011703-44f9829ba187',
+                h: '1567620905732-2d1ec7ab7445',
+                i: '1414235077428-338989a2e8c0',
+                j: '1551782450-a2132b4ba21d',
+                k: '1482049016688-2d3e1b311543',
+                l: '1600891964092-4316c288032e',
+                m: '1512621776951-a57141f2eefd',
+                n: '1540189549336-e6e99c3679fe',
+                o: '1544145945-f90425340c7e',
+                p: '1495474472287-4d71bcdd2085',
+                q: '1513104890138-7c749659a591',
+                r: '1568901346375-23c9450c58cd'
+            };
+            const menu = [{
+                    n: 'Seekh kebab',
+                    c: 'starters',
+                    h: 220,
+                    f: 380,
+                    im: 'aij',
+                    d: 'Charcoal-grilled minced lamb with mint chutney.',
+                    v: 0,
+                    t: 'Bestseller'
+                },
+                {
+                    n: 'Smoked paneer tikka',
+                    c: 'starters',
+                    h: 190,
+                    f: 340,
+                    im: 'bmn',
+                    d: 'Clay-oven paneer with peppers and onion.',
+                    v: 1,
+                    t: 'Chef’s pick'
+                },
+                {
+                    n: 'Tandoori chicken',
+                    c: 'starters',
+                    h: 260,
+                    f: 460,
+                    im: 'ael',
+                    d: '24-hour yoghurt marinade, finished over coals.',
+                    v: 0
+                },
+                {
+                    n: 'Crispy corn chaat',
+                    c: 'starters',
+                    h: 140,
+                    f: 240,
+                    im: 'mnb',
+                    d: 'Tangy, crunchy and topped with fresh herbs.',
+                    v: 1
+                },
+                {
+                    n: 'Hara bhara kebab',
+                    c: 'starters',
+                    h: 150,
+                    f: 270,
+                    im: 'nmb',
+                    d: 'Spinach and green pea patties, crisp outside.',
+                    v: 1
+                },
+                {
+                    n: 'Tandoori fish tikka',
+                    c: 'starters',
+                    h: 280,
+                    f: 490,
+                    im: 'ila',
+                    d: 'Ajwain-spiced fish, charred at the edges.',
+                    v: 0,
+                    t: 'New'
+                },
+                {
+                    n: 'Mutton galouti',
+                    c: 'starters',
+                    h: 300,
+                    f: 540,
+                    im: 'ajc',
+                    d: 'Melt-in-the-mouth patties on mini parathas.',
+                    v: 0
+                },
+                {
+                    n: 'Butter chicken',
+                    c: 'mains',
+                    h: 250,
+                    f: 460,
+                    im: 'cdi',
+                    d: 'Tandoori chicken in a silky tomato gravy.',
+                    v: 0,
+                    t: 'Bestseller'
+                },
+                {
+                    n: 'Dal makhani',
+                    c: 'mains',
+                    h: 170,
+                    f: 310,
+                    im: 'nck',
+                    d: 'Black lentils simmered overnight with butter.',
+                    v: 1,
+                    t: 'Slow-cooked'
+                },
+                {
+                    n: 'Paneer lababdar',
+                    c: 'mains',
+                    h: 210,
+                    f: 380,
+                    im: 'bcn',
+                    d: 'Soft paneer in a rich, mildly sweet tomato gravy.',
+                    v: 1
+                },
+                {
+                    n: 'Dum biryani',
+                    c: 'mains',
+                    h: 230,
+                    f: 420,
+                    im: 'dni',
+                    d: 'Slow-sealed basmati, saffron and whole spices.',
+                    v: 0
+                },
+                {
+                    n: 'Rogan josh',
+                    c: 'mains',
+                    h: 340,
+                    f: 620,
+                    im: 'ecl',
+                    d: 'Kashmiri-style mutton, braised with whole spices.',
+                    v: 0
+                },
+                {
+                    n: 'Kadai chicken',
+                    c: 'mains',
+                    h: 240,
+                    f: 440,
+                    im: 'cai',
+                    d: 'Tomato, peppers and freshly pounded kadai masala.',
+                    v: 0
+                },
+                {
+                    n: 'Tandoori steak',
+                    c: 'mains',
+                    h: 380,
+                    f: 690,
+                    im: 'elj',
+                    d: 'Spice-rubbed cut finished over live coals.',
+                    v: 0,
+                    t: 'Premium'
+                },
+                {
+                    n: 'Garlic naan',
+                    c: 'breads',
+                    h: 60,
+                    f: 110,
+                    im: 'kbm',
+                    d: 'Blistered in the tandoor, brushed with garlic butter.',
+                    v: 1
+                },
+                {
+                    n: 'Butter roti',
+                    c: 'breads',
+                    h: 30,
+                    f: 55,
+                    im: 'kmb',
+                    d: 'Whole-wheat roti straight from the tandoor.',
+                    v: 1
+                },
+                {
+                    n: 'Laccha paratha',
+                    c: 'breads',
+                    h: 55,
+                    f: 100,
+                    im: 'kbn',
+                    d: 'Flaky, layered and golden.',
+                    v: 1
+                },
+                {
+                    n: 'Jeera rice',
+                    c: 'breads',
+                    h: 110,
+                    f: 190,
+                    im: 'dkm',
+                    d: 'Fragrant basmati tempered with cumin.',
+                    v: 1
+                },
+                {
+                    n: 'Smoky pasta',
+                    c: 'breads',
+                    h: 210,
+                    f: 390,
+                    im: 'fkn',
+                    d: 'Chilli-garlic pasta with fire-roasted tomato.',
+                    v: 1
+                },
+                {
+                    n: 'Wood-fired pizza',
+                    c: 'breads',
+                    h: 260,
+                    f: 480,
+                    im: 'qbm',
+                    d: 'Thin crust, tandoori paneer and charred onion.',
+                    v: 1
+                },
+                {
+                    n: 'Angithi burger',
+                    c: 'breads',
+                    h: 230,
+                    f: 420,
+                    im: 'rjc',
+                    d: 'Seekh patty, mint mayo and pickled onion.',
+                    v: 0
+                },
+                {
+                    n: 'Chocolate tandoor cake',
+                    c: 'sweets',
+                    h: 150,
+                    f: 280,
+                    im: 'ghk',
+                    d: 'Warm, gooey and served with cream.',
+                    v: 1,
+                    t: 'Bestseller'
+                },
+                {
+                    n: 'Saffron pancakes',
+                    c: 'sweets',
+                    h: 140,
+                    f: 260,
+                    im: 'hgk',
+                    d: 'Fluffy stacks with honey and pistachio.',
+                    v: 1
+                },
+                {
+                    n: 'Gulab jamun',
+                    c: 'sweets',
+                    h: 90,
+                    f: 160,
+                    im: 'ghk',
+                    d: 'Warm milk dumplings in cardamom syrup.',
+                    v: 1
+                },
+                {
+                    n: 'Rasmalai',
+                    c: 'sweets',
+                    h: 110,
+                    f: 200,
+                    im: 'hgk',
+                    d: 'Soft cheese discs in chilled saffron milk.',
+                    v: 1
+                },
+                {
+                    n: 'Mango lassi',
+                    c: 'drinks',
+                    h: 90,
+                    f: 160,
+                    im: 'opm',
+                    d: 'Thick, cold and made with Alphonso mango.',
+                    v: 1
+                },
+                {
+                    n: 'Masala chai',
+                    c: 'drinks',
+                    h: 50,
+                    f: 90,
+                    im: 'pok',
+                    d: 'Brewed with ginger, cardamom and fresh milk.',
+                    v: 1
+                },
+                {
+                    n: 'Cold coffee',
+                    c: 'drinks',
+                    h: 100,
+                    f: 170,
+                    im: 'pog',
+                    d: 'Dark roast, ice cream and chocolate drizzle.',
+                    v: 1
+                },
+                {
+                    n: 'Smoked mint cooler',
+                    c: 'drinks',
+                    h: 110,
+                    f: 190,
+                    im: 'omn',
+                    d: 'Mint, lime and a puff of charcoal smoke.',
+                    v: 1,
+                    t: 'New'
+                }
+            ];
+            const feats = [
+                ['🔥', 'Live fire', 'Every dish touches real charcoal or wood.'],
+                ['🌿', 'Fresh daily', 'Vegetables and herbs arrive each morning.'],
+                ['🎁', 'Weekend offer', 'Free dessert on orders above ₹999, Sat and Sun.']
+            ];
+            const vals = [
+                ['Slow cooking', 'Good food needs time.'],
+                ['Local sourcing', 'Farms within 80 km.'],
+                ['Warm hosting', 'Guests are family.'],
+                ['Zero waste', 'Scraps go to compost.']
+            ];
+            const stats = [
+                [12, 'Years of fire'],
+                [85, 'Dishes on the menu'],
+                [40000, 'Happy guests'],
+                [9, 'Awards won']
+            ];
+            const steps = [
+                ['🛒', 'Fresh sourcing', 'We pick produce and meat from partner farms each dawn.'],
+                ['🧂', 'Spice grinding', 'Whole spices are roasted and ground in-house every week.'],
+                ['⏳', 'Slow marination', 'Each dish rests 24 hours so flavour goes deep.'],
+                ['🔥', 'Live fire cooking', 'Tandoor and charcoal finish it, then it reaches your table.']
+            ];
+            const gal = ['i', 'j', 'k', 'a', 'l', 'h', 'e', 'm'];
+            const rv = [
+                ['Aarav S.',
+                    'The butter chicken is the best I have had in Delhi. The live fire smell alone sells it.'
+                ],
+                ['Neha K.',
+                    'Gorgeous room, friendly staff, and the biryani came out steaming. We are back next week.'
+                ],
+                ['Imran Q.', 'Booked online in under a minute. Dessert was the surprise hit of the night.']
+            ];
+            const faqs = [
+                ['Do you have vegetarian and vegan options?',
+                    'Yes. More than half of our menu is vegetarian, and many dishes can be made vegan on request.'
+                ],
+                ['Can I order half portions?',
+                    'Yes. Most dishes come in half and full sizes. Half is ideal for one or for sampling.'
+                ],
+                ['Do you take large group bookings?',
+                    'We seat up to 30 guests in our private hall. Use the reservation form and mention your group size.'
+                ],
+                ['How long does delivery take?', 'Usually 30 to 40 minutes within 6 km of Khan Market.']
+            ];
+            const info = [
+                ['📍', 'Address', '21 Khan Market Road, New Delhi 110003'],
+                ['📞', 'Phone', '+91 98100 00000'],
+                ['✉️', 'Email', 'hello@angithi.demo'],
+                ['🕐', 'Hours', 'Every day, 12 PM – 11 PM']
+            ];
+
+            const big = [
+                ['Butter chicken', 'Tandoori chicken in a silky tomato gravy.', 'c',
+                    'md:col-span-2 md:row-span-2'
+                ],
+                ['Seekh kebab', 'Smoky lamb straight off the coals.', 'a', ''],
+                ['Dum biryani', 'Sealed and slow-cooked.', 'd', ''],
+                ['Tandoori steak', 'Spice-rubbed and fire-finished.', 'e', 'md:col-span-2']
+            ];
+            $('#bento').html(big.map(b =>
+                `<a href="#menu" class="zoom rv relative rounded-3xl overflow-hidden min-h-[240px] ${b[3]}"><img class="absolute inset-0 w-full h-full object-cover" src="${U(P[b[2]],1000)}" alt="${b[0]}"><div class="absolute inset-0 bg-gradient-to-t from-wine via-wine/30 to-transparent"></div><div class="absolute bottom-0 p-6"><h3 class="font-display text-2xl md:text-3xl font-bold">${b[0]}</h3><p class="text-ivory/75 text-sm">${b[1]}</p></div></a>`
+                ).join(''));
+            const team = [
+                ['Rohan Mehra', 'Head chef', '1577219491135-ce391730fb2c', ''],
+                ['Meera Kapoor', 'Pastry chef', '1556910103-1c02745aae4d', 'md:mt-12'],
+                ['Arjun Singh', 'Tandoor master', '1466978913421-dad2ebd01d17', '']
+            ];
+            $('#teamg').html(team.map(t =>
+                `<div class="rv zoom relative rounded-[2rem] overflow-hidden h-[420px] ${t[3]}"><img class="w-full h-full object-cover" src="${U(t[2],900)}" alt="${t[0]}"><div class="absolute inset-0 bg-gradient-to-t from-wine via-transparent to-transparent"></div><div class="absolute bottom-0 p-6"><h3 class="font-display text-2xl font-bold">${t[0]}</h3><p class="text-saffron">${t[1]}</p></div></div>`
+                ).join(''));
+            $('#feat').html(feats.map(f =>
+                `<div class="rv bg-wine2 rounded-3xl p-8 hover:-translate-y-2 transition duration-300"><div class="text-4xl">${f[0]}</div><h3 class="font-display text-2xl font-bold mt-4">${f[1]}</h3><p class="mt-2 text-ivory/70">${f[2]}</p></div>`
+                ).join(''));
+            $('#vals').html(vals.map(f =>
+                `<div class="rv border border-white/15 rounded-2xl p-5"><h3 class="font-display text-lg font-bold text-saffron">${f[0]}</h3><p class="text-sm text-ivory/70">${f[1]}</p></div>`
+                ).join(''));
+            $('#stats').html(stats.map(s =>
+                `<div class="rv"><b class="cnt font-display text-5xl md:text-6xl" data-n="${s[0]}">0</b><p class="font-medium">${s[1]}</p></div>`
+                ).join(''));
+            $('#steps').html(steps.map((s, i) =>
+                `<div class="rv bg-wine2 rounded-3xl p-7 relative" style="transition-delay:${i*100}ms"><span class="absolute top-5 right-6 font-display text-5xl text-white/10">${i+1}</span><div class="text-4xl">${s[0]}</div><h3 class="font-display text-xl font-bold mt-4">${s[1]}</h3><p class="mt-2 text-ivory/70 text-sm">${s[2]}</p></div>`
+                ).join(''));
+            $('#gg').html(gal.map(g =>
+                `<div class="zoom rounded-2xl mb-4 cursor-zoom-in break-inside-avoid g"><img class="w-full" src="${U(P[g])}" alt="Restaurant photo" loading="lazy"></div>`
+                ).join(''));
+            $('#mini').html(rv.map(r =>
+                `<div class="bg-wine2 rounded-2xl p-6"><p class="text-saffron">★★★★★</p><p class="mt-2 text-ivory/80">${r[1]}</p><b class="block mt-3">${r[0]}</b></div>`
+                ).join(''));
+            $('#rvw').html(rv.map((r, i) =>
+                `<div class="slide absolute inset-0 transition duration-700 ${i?'opacity-0 pointer-events-none':''}"><div class="text-saffron text-3xl">★★★★★</div><p class="font-display text-2xl md:text-4xl mt-6 leading-snug">“${r[1]}”</p><b class="block mt-6 text-saffron">${r[0]}</b></div>`
+                ).join(''));
+            $('#dots').html(rv.map((r, i) =>
+                `<button class="dot h-3 rounded-full transition ${i?'bg-white/30 w-3':'bg-saffron w-8'}" data-i="${i}" aria-label="Review ${i+1}"></button>`
+                ).join(''));
+            $('#faqs').html(faqs.map(f =>
+                `<div class="faq rv bg-wine2 rounded-2xl"><button class="q w-full flex justify-between items-center p-5 text-left font-medium"><span>${f[0]}</span><span class="ic text-2xl text-saffron">+</span></button><div class="a"><p class="px-5 pb-5 text-ivory/70">${f[1]}</p></div></div>`
+                ).join(''));
+            $('#info').html(info.map(i =>
+                `<div class="flex gap-4 bg-wine rounded-2xl p-5 items-center"><span class="text-3xl">${i[0]}</span><div><b>${i[1]}</b><p class="text-ivory/70">${i[2]}</p></div></div>`
+                ).join(''));
+            $(document).on('click', '.q', function() {
+                $(this).parent().toggleClass('open')
+            });
+
+            // menu cards
+            let cat = 'all',
+                qs = '',
+                vo = false;
+
+            function renderMenu() {
+                const L = menu.map((m, k) => ({
+                    m,
+                    k
+                })).filter(o => (cat == 'all' || o.m.c == cat) && (!vo || o.m.v) && o.m.n.toLowerCase()
+                    .includes(qs));
+                $('#mgrid').html(L.length ? L.map(({
+                        m,
+                        k
+                    }, j) => `
+<div class="rv bg-wine rounded-3xl overflow-hidden flex flex-col card" data-k="${k}" data-p="full" style="transition-delay:${(j%4)*60}ms">
+ <div class="zoom relative"><img class="mi w-full h-48 object-cover" src="${U(P[m.im[0]])}" alt="${m.n}" loading="lazy">
+  <span class="absolute top-3 left-3 w-5 h-5 rounded bg-white grid place-items-center" title="${m.v?'Vegetarian':'Non-vegetarian'}"><i class="w-2.5 h-2.5 rounded-full ${m.v?'bg-green-600':'bg-red-600'}"></i></span>
+  ${m.t?`<span class="absolute top-3 right-3 bg-saffron text-wine text-xs font-bold px-3 py-1 rounded-full">${m.t}</span>`:''}</div>
+ <div class="flex gap-2 px-5 pt-3">${m.im.split('').map((x,i)=>`<img class="th ${i?'':'on'}" data-s="${U(P[x])}" src="${U(P[x],120)}" alt="View ${i+1}">`).join('')}</div>
+ <div class="p-5 flex-1 flex flex-col"><h3 class="font-display text-xl font-bold">${m.n}</h3><p class="text-sm text-ivory/65 mt-1 flex-1">${m.d}</p>
+  <div class="flex gap-2 mt-4"><button class="por" data-p="half">Half</button><button class="por on" data-p="full">Full</button></div>
+  <div class="flex items-center justify-between mt-4"><b class="pr text-saffron text-xl">₹${m.f}</b>
+   <div class="flex items-center gap-2"><button class="qb qm">−</button><span class="qv w-5 text-center">1</span><button class="qb qp">+</button></div></div>
+  <button class="add btn mt-4 w-full !py-2.5">Add to basket</button></div></div>`).join('') :
+                    '<p class="col-span-full text-center text-ivory/60 py-16">No dishes found. Try another search or category.</p>'
+                    );
+                setTimeout(reveal, 30)
+            }
+            renderMenu();
+            $('#tabs').on('click', '.tab', function() {
+                $('#tabs .tab').removeClass('on');
+                $(this).addClass('on');
+                cat = $(this).data('c');
+                renderMenu()
+            });
+            $('#ms').on('input', function() {
+                qs = this.value.trim().toLowerCase();
+                renderMenu()
+            });
+            $('#veg').click(function() {
+                vo = !vo;
+                $(this).toggleClass('on', vo);
+                renderMenu()
+            });
+            $(document).on('click', '.th', function() {
+                const c = $(this).closest('.card');
+                c.find('.th').removeClass('on');
+                $(this).addClass('on');
+                c.find('.mi').css('opacity', 0).attr('src', $(this).data('s')).on('load', function() {
+                    $(this).css('opacity', 1)
+                })
+            });
+            $(document).on('click', '.por', function() {
+                const c = $(this).closest('.card'),
+                    m = menu[c.data('k')],
+                    p = $(this).data('p');
+                c.data('p', p).attr('data-p', p);
+                c.find('.por').removeClass('on');
+                $(this).addClass('on');
+                c.find('.pr').text('₹' + m[p[0] == 'h' ? 'h' : 'f'])
+            });
+            $(document).on('click', '.qp,.qm', function() {
+                const v = $(this).closest('.card').find('.qv');
+                let n = +v.text() + ($(this).hasClass('qp') ? 1 : -1);
+                v.text(Math.min(20, Math.max(1, n)))
+            });
+
+            // cart
+            let cart = [];
+            try {
+                cart = JSON.parse(localStorage.getItem('ang_cart')) || []
+            } catch (e) {}
+            const US = () => {
+                try {
+                    return JSON.parse(localStorage.getItem('ang_user')) || {}
+                } catch (e) {
+                    return {}
+                }
+            };
+            const SU = o => {
+                try {
+                    localStorage.setItem('ang_user', JSON.stringify({
+                        ...US(),
+                        ...o
+                    }))
+                } catch (e) {}
+            };
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1800,
+                timerProgressBar: true,
+                background: '#E8A33D',
+                color: '#2B0F12',
+                iconColor: '#2B0F12'
+            });
+            const rs = n => '₹' + n.toLocaleString('en-IN');
+
+            function draw() {
+                try {
+                    localStorage.setItem('ang_cart', JSON.stringify(cart))
+                } catch (e) {}
+                const q = cart.reduce((s, i) => s + i.q, 0),
+                    sub = cart.reduce((s, i) => s + i.q * i.p, 0),
+                    g = Math.round(sub * .05);
+                $('#cc').text(q);
+                $('#sub').text(rs(sub));
+                $('#gst').text(rs(g));
+                $('#tot').text(rs(sub + g));
+                $('#items').html(cart.length ? cart.map((i, x) =>
+                        `<div class="flex gap-4 items-center bg-wine rounded-2xl p-3"><img class="w-16 h-16 rounded-xl object-cover" src="${i.img}" alt=""><div class="flex-1"><b>${i.n}</b><p class="text-xs text-ivory/60">${i.por} portion · ${rs(i.p)}</p><div class="flex items-center gap-2 mt-2"><button class="qb ci" data-x="${x}" data-d="-1">−</button><span class="w-5 text-center">${i.q}</span><button class="qb ci" data-x="${x}" data-d="1">+</button></div></div><div class="text-right"><b class="text-saffron">${rs(i.p*i.q)}</b><button class="rm block text-xs text-ember mt-2" data-x="${x}">Remove</button></div></div>`
+                        ).join('') :
+                    '<div class="text-center text-ivory/60 pt-20"><div class="text-6xl mb-3">🍽️</div><p>Your basket is empty.<br>Add something delicious from the menu.</p></div>'
+                    )
+            }
+            draw();
+            $(document).on('click', '.add', function() {
+                const c = $(this).closest('.card'),
+                    m = menu[c.data('k')],
+                    p = c.data('p'),
+                    q = +c.find('.qv').text(),
+                    k = m.n + p,
+                    e = cart.find(i => i.k == k);
+                if (e) e.q = Math.min(20, e.q + q);
+                else cart.push({
+                    k,
+                    n: m.n,
+                    por: p == 'half' ? 'Half' : 'Full',
+                    p: m[p == 'half' ? 'h' : 'f'],
+                    q,
+                    img: c.find('.mi').attr('src')
+                });
+                draw();
+                $('#cc').css('transform', 'scale(1.6)');
+                setTimeout(() => $('#cc').css('transform', 'scale(1)'), 220);
+                Toast.fire({
+                    icon: 'success',
+                    title: `${q} × ${m.n} (${p}) added`
+                });
+                c.find('.qv').text(1)
+            });
+            $(document).on('click', '.ci', function() {
+                const i = cart[$(this).data('x')];
+                i.q += +$(this).data('d');
+                if (i.q < 1) cart.splice($(this).data('x'), 1);
+                draw()
+            });
+            $(document).on('click', '.rm', function() {
+                cart.splice($(this).data('x'), 1);
+                draw()
+            });
+            const open = o => {
+                $('#drawer').css('transform', o ? 'translateX(0)' : '');
+                $('#ov').toggleClass('hidden', !o)
+            };
+            $('#cartBtn').click(() => open(1));
+            $('#cx,#ov').click(() => open(0));
+            $('#clr').click(() => {
+                if (!cart.length) return;
+                Swal.fire({
+                    ...T,
+                    title: 'Clear basket?',
+                    text: 'All items will be removed.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, clear it'
+                }).then(r => {
+                    if (r.isConfirmed) {
+                        cart = [];
+                        draw()
+                    }
+                })
+            });
+            $('#chk').click(() => {
+                if (!cart.length) return Swal.fire({
+                    ...T,
+                    icon: 'info',
+                    title: 'Basket is empty',
+                    text: 'Add at least one dish to checkout.'
+                });
+                Swal.fire({
+                    ...T,
+                    title: 'Delivery details',
+                    html: '<input id="sn" class="swal2-input" placeholder="Your name"><input id="sp" class="swal2-input" placeholder="Phone number"><textarea id="sa" class="swal2-textarea" placeholder="Delivery address"></textarea>',
+                    showCancelButton: true,
+                    confirmButtonText: 'Place order',
+                    didOpen: () => {
+                        $('#sn').val(US().name || '');
+                        $('#sp').val(US().phone || '')
+                    },
+                    preConfirm: () => {
+                        const n = $('#sn').val().trim(),
+                            p = $('#sp').val().trim(),
+                            a = $('#sa').val().trim();
+                        if (!n || !/^\d{10}$/.test(p) || !a) {
+                            Swal.showValidationMessage(
+                                'Enter name, a 10-digit phone and address');
+                            return false
+                        }
+                        SU({
+                            name: n,
+                            phone: p
+                        });
+                        return n
+                    }
+                }).then(r => {
+                    if (r.isConfirmed) {
+                        const id = 'ANG' + Math.floor(1000 + Math.random() * 9000);
+                        cart = [];
+                        draw();
+                        open(0);
+                        Swal.fire({
+                            ...T,
+                            icon: 'success',
+                            title: 'Order placed!',
+                            html: `Thanks, ${r.value}. Your order <b>${id}</b> is on its way in about 35 minutes.`
+                        })
+                    }
+                })
+            });
+
+            // scroll, nav
+            function reveal() {
+                const b = $(window).scrollTop() + $(window).height() - 40;
+                $('.rv').each(function() {
+                    if ($(this).offset().top < b) $(this).addClass('in')
+                })
+            }
+
+            function counters() {
+                $('.cnt').each(function() {
+                    const el = $(this);
+                    if (el.data('d') || el.offset().top > $(window).scrollTop() + $(window).height())
+                return;
+                    el.data('d', 1);
+                    $({
+                        v: 0
+                    }).animate({
+                        v: el.data('n')
+                    }, {
+                        duration: 1800,
+                        step(v) {
+                            el.text(Math.floor(v).toLocaleString())
+                        },
+                        complete() {
+                            el.text(el.data('n').toLocaleString() + '+')
+                        }
+                    })
+                })
+            }
+            $(window).on('scroll', function() {
+                const y = $(this).scrollTop();
+                $('#nav').toggleClass('solid', y > 40);
+                $('#top').css({
+                    opacity: y > 600 ? 1 : 0,
+                    pointerEvents: y > 600 ? 'auto' : 'none'
+                });
+                reveal();
+                counters();
+                let cur = 'home';
+                nav.forEach(n => {
+                    if ($('#' + n[0]).offset().top - 140 <= y) cur = n[0]
+                });
+                $('.nl').removeClass('on').filter(`[href="#${cur}"]`).addClass('on')
+            }).trigger('scroll');
+            $('#mob a').click(() => $('#mob').addClass('hidden').removeClass('flex'));
+            $('#burger').click(() => $('#mob').toggleClass('hidden flex'));
+            $('#top').click(() => $('html,body').animate({
+                scrollTop: 0
+            }, 600));
+
+            // reviews, lightbox
+            let si = 0;
+
+            function show(i) {
+                si = i;
+                $('.slide').addClass('opacity-0 pointer-events-none').eq(i).removeClass(
+                    'opacity-0 pointer-events-none');
+                $('.dot').removeClass('bg-saffron w-8').addClass('bg-white/30 w-3').eq(i).addClass('bg-saffron w-8')
+                    .removeClass('bg-white/30 w-3')
+            }
+            $('#dots').on('click', '.dot', function() {
+                show($(this).data('i'))
+            });
+            setInterval(() => show((si + 1) % rv.length), 5000);
+            $(document).on('click', '.g', function() {
+                Swal.fire({
+                    imageUrl: $(this).find('img').attr('src'),
+                    imageAlt: 'Photo',
+                    showConfirmButton: false,
+                    showCloseButton: true,
+                    width: 'min(90vw,900px)',
+                    padding: '1rem',
+                    background: '#2B0F12',
+                    color: '#F6EBD9'
+                })
+            });
+
+            // forms
+            $('#rd').attr('min', new Date().toISOString().split('T')[0]);
+            $('#rn').val(US().name || '');
+            $('#rp').val(US().phone || '');
+            $('#rsub').click(function() {
+                const n = $('#rn').val().trim(),
+                    p = $('#rp').val().trim(),
+                    d = $('#rd').val();
+                let e = '';
+                if (n.length < 2) e = 'Enter your full name.';
+                else if (!/^\d{10}$/.test(p)) e = 'Enter a valid 10-digit phone number.';
+                else if (!d) e = 'Pick a date for your visit.';
+                if (e) return Swal.fire({
+                    ...T,
+                    icon: 'warning',
+                    title: 'Almost there',
+                    text: e
+                });
+                Swal.fire({
+                    ...T,
+                    title: 'Confirm booking?',
+                    html: `<b>${n}</b><br>${$('#rg').val()} guest(s) · ${d} · ${$('#rt').val()}`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, book it'
+                }).then(r => {
+                    if (r.isConfirmed) {
+                        Swal.fire({
+                            ...T,
+                            icon: 'success',
+                            title: 'Table reserved!',
+                            text: 'We’ll call you shortly to confirm. See you soon!'
+                        });
+                        SU({
+                            name: n,
+                            phone: p
+                        });
+                        $('#rd,#rm').val('')
+                    }
+                })
+            });
+            $('#csub').click(function() {
+                if (!$('#cn').val().trim() || !/\S+@\S+\.\S+/.test($('#ce').val()) || !$('#cm').val()
+                .trim()) return Swal.fire({
+                    ...T,
+                    icon: 'error',
+                    title: 'Missing details',
+                    text: 'Enter your name, a valid email and a message.'
+                });
+                Swal.fire({
+                    ...T,
+                    icon: 'success',
+                    title: 'Message sent',
+                    text: 'We’ll reply within one working day.'
+                });
+                $('#cn,#ce,#cm').val('')
+            });
+            $('#nsub').click(function() {
+                if (!/\S+@\S+\.\S+/.test($('#ne').val())) return Swal.fire({
+                    ...T,
+                    icon: 'error',
+                    title: 'Check your email',
+                    text: 'Enter a valid email address.'
+                });
+                Swal.fire({
+                    ...T,
+                    icon: 'success',
+                    title: 'Welcome aboard!',
+                    text: 'Use code FIRE10 for 10% off your first order.'
+                });
+                $('#ne').val('')
+            });
+
+            // cursor
+            if (matchMedia('(hover:hover) and (pointer:fine)').matches) {
+                $('html').addClass('cur');
+                let mx = innerWidth / 2,
+                    my = innerHeight / 2,
+                    rx = mx,
+                    ry = my,
+                    lt = 0;
+                const HV = 'a,button,.th,.g,.q,.dot,.tab,.por,.qb',
+                    VW = '.mi,.g img';
+
+                function spark(x, y) {
+                    const e = $('<i class="sp"></i>').css({
+                        left: x,
+                        top: y,
+                        '--dx': (Math.random() * 40 - 20) + 'px'
+                    });
+                    $('body').append(e);
+                    setTimeout(() => e.remove(), 800)
+                }
+                $(document).on('mousemove', e => {
+                        mx = e.clientX;
+                        my = e.clientY;
+                        $('#cd').css('transform', `translate(${mx}px,${my}px)`);
+                        const n = Date.now();
+                        if (n - lt > 45) {
+                            lt = n;
+                            spark(mx, my)
+                        }
+                    })
+                    .on('mouseover', HV, () => $('#cr').addClass('hv')).on('mouseout', HV, () => $('#cr')
+                        .removeClass('hv'))
+                    .on('mouseover', VW, () => $('#cr').addClass('vw')).on('mouseout', VW, () => $('#cr')
+                        .removeClass('vw'))
+                    .on('mousedown', () => $('#cr').addClass('dn')).on('mouseup', () => $('#cr').removeClass('dn'))
+                    .on('mouseleave', () => $('#cd,#cr').css('opacity', 0)).on('mouseenter', () => $('#cd,#cr').css(
+                        'opacity', 1));
+                (function loop() {
+                    rx += (mx - rx) * .15;
+                    ry += (my - ry) * .15;
+                    $('#cr').css('transform', `translate(${rx}px,${ry}px)`);
+                    requestAnimationFrame(loop)
+                })();
+            }
+            $('#replay').click(() => {
+                try {
+                    sessionStorage.removeItem('ang_seen')
+                } catch (e) {}
+                location.reload()
+            });
+
+            // gate: only on the very first visit
+            let seen = false;
+            try {
+                seen = !!sessionStorage.getItem('ang_seen')
+            } catch (e) {}
+            if (seen) {
+                $('#gate').addClass('done');
+                reveal();
+                counters();
+                const u = US();
+                if (u.name || cart.length) setTimeout(() => Toast.fire({
+                    icon: 'info',
+                    title: u.name ? `Welcome back, ${u.name}!` : 'Welcome back!'
+                }), 700)
+            } else {
+                $('#gate .bar i').css('width', '100%');
+                setTimeout(() => {
+                    $('#gate').addClass('open');
+                    try {
+                        sessionStorage.setItem('ang_seen', '1')
+                    } catch (e) {}
+                    setTimeout(() => {
+                        $('#gate').addClass('done');
+                        reveal();
+                        counters()
+                    }, 1500)
+                }, 2200)
+            }
+        });
+    </script>
+</body>
+
+</html>
